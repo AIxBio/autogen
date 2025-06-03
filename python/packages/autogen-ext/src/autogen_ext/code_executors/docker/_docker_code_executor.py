@@ -358,8 +358,12 @@ $functions"""
                 with code_path.open("w", encoding="utf-8") as fout:
                     fout.write(code)
                 files.append(code_path)
-
-                command = ["timeout", str(self._timeout), lang_to_cmd(lang), filename]
+                try:
+                    command = ["timeout", str(self._timeout), lang_to_cmd(lang), filename]
+                except ValueError as e:
+                    outputs.append(str(e))
+                    last_exit_code = 1
+                    break
 
                 output, exit_code = await self._execute_command(command, cancellation_token)
                 outputs.append(output)
